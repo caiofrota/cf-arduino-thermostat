@@ -1,58 +1,58 @@
+WiFiClient wifiClient;                                                                              // Wi-Fi.
+ThingsBoard thingsBoard(wifiClient);                                                                // Things Board.
+
 // Attributes.
+bool tbConnected = false;                                                                           // True if Things Board is connected.
 bool rpcSubscribed = false;                                                                         // True if application is subscribed with RPC.
 bool attrSubscribed = false;                                                                        // True if application is subscribed with attributes.
-long thingsBoardTimeToSend = 1000;                                                                  // ThingsBoard minimum frequency to send data.
-long thingsBoardTimeToRetry = 5000;                                                                 // ThingsBoard minimum frequency to retry connecting.
+long thingsBoardTimeToSend = 60000;    // 60 seconds.                                               // Things Board minimum frequency to send data.
+long thingsBoardTimeToRetry = 10000;   // 10 seconds.                                               // Things Board minimum frequency to retry connecting.
 long lastSentMillis = 0;                                                                            // Store last time data was sent to server.
 
 /**
- * Send data to ThingsBoard.
+ * Send data to Things Board.
  */
-void sendTBData() {
+void tbSendData() {
     // JSON Data.
     DynamicJsonDocument json(64);
-    
-    // Sending soil moisture data.
-    json = readDHTData(dht, "dht");
+
+    // Sending DHT data.
+    json["dht_tempc"] = getDHTTemperatureC();
+    json["dht_tempf"] = getDHTTemperatureF();
+    json["dht_humid"] = getDHTHumidity();
     char dht[64]; serializeJson(json, dht);
     
     thingsBoard.sendTelemetryJson(dht);
+
+    json.clear();
+    json["dht_hidxc"] = getDHTHeatIndexC();
+    json["dht_hidxf"] = getDHTHeatIndexF();
+    char heat[64]; serializeJson(json, heat);
+    
+    thingsBoard.sendTelemetryJson(heat);
 }
 
 /**
- * Send attributes to ThingsBoard.
+ * Send attributes to Things Board.
  */
-void sendTBAttrData() {
-    thingsBoard.sendAttributeString("attr_device_name", ((String) wifiManagerCustomParameters[P_DEVICE_NAME].getValue()).c_str());
+void tbSendAttrData() {
+    thingsBoard.sendAttributeString("attr_device_name", getWifiParamDeviceName().c_str());
 }
 
 /** 
- * ThingsBoard attribute change callback.
+ * Things Board attribute change callback.
  */
-void receiveAttrCallback(const RPC_Data &data) {
+void tbReceiveAttrCallback(const RPC_Data &data) {
     Logger::notice("Received the set delay ATTR method.");
     
-    // Process data.
-    String key;
-    
     // Device Name.
-    key = wifiManagerCustomParameters[P_DEVICE_NAME].getID();
-    if (data.containsKey(key)) {
-        String value = data[key];
-        wifiManagerCustomParameters[P_DEVICE_NAME].setValue(value.c_str(), wifiManagerCustomParameters[P_DEVICE_NAME].getValueLength());
-    }
-    
-    // Save attributes.
-    Logger::notice("Call save param.");
-
-    // Call save parameters.
-    saveWiFiCustomParameters();
+    setWifiParamDeviceName(data["p_device_name"]);
 }
 
 /** 
- * ThingsBoard Default RPC method callback.
+ * Things Board Default RPC method callback.
  */
-void receiveRPCDefaultCallback(const RPC_Data &data, RPC_Response &resp) {
+void tbReceiveRPCDefaultCallback(const RPC_Data &data, RPC_Response &resp) {
     Logger::notice("Received the set delay RPC method.");
     
     // Process data.
@@ -66,53 +66,61 @@ void receiveRPCDefaultCallback(const RPC_Data &data, RPC_Response &resp) {
     r["value"] = value;
 }
 
-// ThingsBoard RPC callback method list.
-int receiveRPCCallbackListSize = 1;
-RPC_Callback receiveRPCCallbackList[] = {
-    { "default",              receiveRPCDefaultCallback }
+// Things Board RPC callback method list.
+int tbReceiveRPCCallbackListSize = 1;
+RPC_Callback tbReceiveRPCCallbackList[] = {
+    { "default",              tbReceiveRPCDefaultCallback }
 };
 
 /**
- * ThingsBoard loop.
+ * Things Board loop.
  */
-void thingsBoardLoop() {
+void tbLoop() {
     if (!thingsBoard.connected()) {
-        rpcSubscribed = false;
-        attrSubscribed = false;
-        char serverURL[50]; strcpy(serverURL, wifiManagerCustomParameters[P_SERVER_URL].getValue());
-        char token[50]; strcpy(token, wifiManagerCustomParameters[P_TOKEN].getValue());
-        
-        Logger::notice("Connecting to ThingsBoard node.");
-        if (thingsBoard.connect(serverURL, token)) {
-            // Processing data.
-            char espChipId[6];
-            sprintf(espChipId, "%06X", ESP.getChipId());
+        if ((millis() - lastSentMillis) > thingsBoardTimeToRetry) {
+            tbConnected = false;
+            rpcSubscribed = false;
+            attrSubscribed = false;
+            char serverURL[50]; strcpy(serverURL, getWifiParamServerURL().c_str());
+            char token[50]; strcpy(token, getWifiParamToken().c_str());
+            char deviceName[50]; strcpy(deviceName, getWifiParamDeviceName().c_str());
             
-            // Send application attributes.
-            thingsBoard.sendAttributeString("app_sketch", appSketch);
-            thingsBoard.sendAttributeString("app_version", appVersion);
-            thingsBoard.sendAttributeString("device_chip_id", espChipId);
-            thingsBoard.sendAttributeString("device_local_ip", WiFi.localIP().toString().c_str());
-            thingsBoard.sendAttributeString("attr_device_name", ((String) wifiManagerCustomParameters[P_DEVICE_NAME].getValue()).c_str());
+            Logger::notice("Connecting to Things Board node.");
+            if (thingsBoard.connect(serverURL, token)) {
+                tbConnected = true;
+                
+                // Processing data.
+                char espChipId[6];
+                sprintf(espChipId, "%06X", ESP.getChipId());
+                
+                // Send application attributes.
+                thingsBoard.sendAttributeString("app_sketch", appSketch);
+                thingsBoard.sendAttributeString("app_version", appVersion);
+                thingsBoard.sendAttributeString("device_chip_id", espChipId);
+                thingsBoard.sendAttributeString("device_local_ip", WiFi.localIP().toString().c_str());
+                thingsBoard.sendAttributeString("attr_device_name", deviceName);
+            } else {
+                Logger::warning("Fail connecting Things Board. Retrying in " + String(thingsBoardTimeToRetry / 1000) + " second(s).");
+                lastSentMillis = millis();
+                return;
+            }
         } else {
-            Logger::warning("Fail connecting ThingsBoard. Retrying in " + String(thingsBoardTimeToRetry / 1000) + " second(s).");
-            delay(thingsBoardTimeToRetry);
             return;
         }
     }
     
     if (millis() - lastSentMillis > thingsBoardTimeToSend) {
-        Logger::notice("Sending data to ThingsBoard.");
-        sendTBData();
-        Logger::notice("Sending attribute data to ThingsBoard.");
-        sendTBAttrData();
+        Logger::notice("Sending data to Things Board.");
+        tbSendData();
+        Logger::notice("Sending attribute data to Things Board.");
+        tbSendAttrData();
         lastSentMillis = millis();
     }
     
     // RPC subscription.
     if (!rpcSubscribed) {
         Logger::notice("Subscribing for RPC.");
-        if (!thingsBoard.RPC_Subscribe(receiveRPCCallbackList, receiveRPCCallbackListSize)) {
+        if (!thingsBoard.RPC_Subscribe(tbReceiveRPCCallbackList, tbReceiveRPCCallbackListSize)) {
           Logger::error("Fail subscribing for RPC.");
           return;
         }
@@ -122,13 +130,22 @@ void thingsBoardLoop() {
     // Attribute subscription.
     if (!attrSubscribed) {
         Logger::notice("Subscribing for attributes.");
-        if (!thingsBoard.Attr_Subscribe(receiveAttrCallback)) {
+        if (!thingsBoard.Attr_Subscribe(tbReceiveAttrCallback)) {
           Logger::error("Fail subscribing for attributes.");
           return;
         }
         attrSubscribed = true;
     }
 
-    // Call ThingsBoard loop.
+    // Call Things Board loop.
     thingsBoard.loop();
+}
+
+/**
+ * Check if Things Board is connected.
+ * 
+ * @return bool: True if Things Board is connected.
+ */
+bool isTBConnected() {
+    return tbConnected;
 }
