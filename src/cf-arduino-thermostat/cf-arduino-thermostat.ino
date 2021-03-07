@@ -8,7 +8,7 @@
  * @since   Feb, 2021
  */
 
-//#define USE_DISPLAY                                                                                 // Comment this line if you won't use display.
+#define USE_DISPLAY                                                                                 // Comment this line if you won't use display.
 
 // Libraries.
 #include <ArduinoJson.h>                                                                            // Arduino JSON.
@@ -19,6 +19,8 @@
 #include <WiFiManager.h>                                                                            // Wi-Fi Manager.
 #include <Wire.h>                                                                                   // Wire.
 
+#include <CFIconSet.h>                                                                              // CF Icon Set for display.
+
 // Libraries Display.
 #ifdef USE_DISPLAY
     #include <Adafruit_GFX.h>                                                                       // Adafruit GFX.
@@ -27,7 +29,7 @@
 
 // Application attributes.
 const char* appSketch = "cf-arduino-thermostat";                                                    // Application sketch.
-const char* appVersion = "2.0.0";                                                                   // Application version.
+const char* appVersion = "2.0.1";                                                                   // Application version.
 
 void setup() {
     // Start Serial Monitor.
