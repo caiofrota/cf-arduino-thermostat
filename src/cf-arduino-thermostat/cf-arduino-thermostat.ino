@@ -8,7 +8,7 @@
  * @since   Feb, 2021
  */
 
-#define USE_DISPLAY                                                                                 // Comment this line if you won't use display.
+//#define USE_DISPLAY                                                                                 // Comment this line if you won't use display.
 
 // Libraries.
 #include <ArduinoJson.h>                                                                            // Arduino JSON.
