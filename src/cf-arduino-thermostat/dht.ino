@@ -6,6 +6,7 @@ float dhtTemperatureF = 0;                                                      
 float dhtHumidity = 0;                                                                              // Humidity.
 float dhtHeatIndexC = 0;                                                                            // Heat index in Celsius.
 float dhtHeatIndexF = 0;                                                                            // Heat index in Fahrenheit.
+bool dhtRead = false;                                                                               // Flag for read failure checking.
 
 /**
  * Collect DHT data.
@@ -24,6 +25,7 @@ void dhtReadData() {
         dhtHumidity = 0.0;
         dhtHeatIndexC = 0.0;
         dhtHeatIndexF = 0.0;
+        dhtRead = false;
         return;
     }
     
@@ -32,6 +34,7 @@ void dhtReadData() {
     dhtHumidity = roundf(dhtHumidity * 10) / 10;
     dhtHeatIndexC = roundf(dht.computeHeatIndex(dhtTemperatureC, dhtHumidity, false) * 10) / 10;
     dhtHeatIndexF = roundf(dht.computeHeatIndex(dhtTemperatureF, dhtHumidity) * 10) / 10;
+    dhtRead = true;
 }
 
 /**
@@ -81,4 +84,13 @@ float getDHTHeatIndexF() {
  */
 float getDHTHumidity() {
     return dhtHumidity;
+}
+
+/**
+ * Get DHT Read.
+ * 
+ * @returns True if dht was read successfully.
+ */
+bool isDHTRead() {
+    return dhtRead;
 }

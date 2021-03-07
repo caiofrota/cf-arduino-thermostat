@@ -16,6 +16,12 @@ void tbSendData() {
     // JSON Data.
     DynamicJsonDocument json(64);
 
+    // Seding DHT reading status.
+    json["dht_read"] = isDHTRead();
+    char isRead[64]; serializeJson(json, isRead);
+    
+    thingsBoard.sendTelemetryJson(isRead);
+
     // Sending DHT data.
     json["dht_tempc"] = getDHTTemperatureC();
     json["dht_tempf"] = getDHTTemperatureF();
