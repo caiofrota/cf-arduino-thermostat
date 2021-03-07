@@ -13,10 +13,12 @@ WiFiManagerParameter wifiManagerCustomParameters[] = {                          
 WiFiManager wifiManager;                                                                            // Wi-Fi Manager.
 WiFiServer wifiServer(80);                                                                          // Wi-Fi.
 
+const String WIFI_DEFAULT_SSID = wifiManager.getDefaultAPName();                                    // Default SSID.
+const String WIFI_DEFAULT_PASSWORD = "12345678";                                                    // Default Wi-Fi password.
 bool wifiConnected = false;                                                                         // True if Wi-Fi is connected.
 String wifiSSID = wifiManager.getDefaultAPName();                                                   // Wi-Fi SSID.
-String wifiPassword = "12345678";                                                                   // Wi-Fi password.
-String wifiIP = String(ESP.getChipId()).substring(0, 8);                                            // Wi-Fi IP address.
+String wifiAPIP = "";                                                                               // Wi-Fi AP IP.
+String wifiIP = "";                                                                                 // Wi-Fi IP address.
 
 /**
  * Start Wi-Fi Manager.
@@ -51,12 +53,11 @@ void wifiManagerBegin() {
     
     // Start Wi-Fi Manager.
     WiFi.mode(WIFI_STA);
-    bool res = wifiManager.autoConnect(wifiSSID.c_str(), wifiPassword.c_str());
+    bool res = wifiManager.autoConnect(WIFI_DEFAULT_SSID.c_str(), WIFI_DEFAULT_PASSWORD.c_str());
     
     if (res) {
         // Connected.
         wifiSSID = WiFi.SSID();
-        wifiPassword = "";
         wifiIP = WiFi.localIP().toString();
         wifiManager.startWebPortal();
         wifiServer.begin();
@@ -83,6 +84,37 @@ void wifiConfigModeCallback(WiFiManager *myWiFiManager) {
     #ifdef USE_DISPLAY
         displayRenderAPPage();
     #endif
+}
+
+/**
+ * Start config portal.
+ */
+void wifiStartConfigPortal() {
+    #ifdef USE_DISPLAY
+        displayRenderAPPage();
+    #endif
+    bool res = wifiManager.startConfigPortal(WIFI_DEFAULT_SSID.c_str(), WIFI_DEFAULT_PASSWORD.c_str());
+    
+    if (res) {
+        // Connected.
+        wifiSSID = WiFi.SSID();
+        wifiIP = WiFi.localIP().toString();
+        wifiManager.startWebPortal();
+        wifiServer.begin();
+        wifiConnected = true;
+    } else {
+        // Not connected.
+    }
+}
+
+/**
+ * Reset config.
+ */
+void resetConfig() { 
+    //SPIFFS.format();                                                              // Format SPIFFS.
+    wifiManager.erase        ();                                                    // Erase Wi-Fi credentials.
+    wifiManager.resetSettings();                                                    // Reset config.
+    ESP.restart();
 }
 
 /**
@@ -172,6 +204,15 @@ bool isWiFiConnected() {
 }
 
 /**
+ * Get Wi-Fi default SSID.
+ * 
+ * @return String: Wi-Fi SSID.
+ */
+String getWiFiDefaultSSID() {
+    return WIFI_DEFAULT_SSID;
+}
+
+/**
  * Get Wi-Fi SSID.
  * 
  * @return String: Wi-Fi SSID.
@@ -185,8 +226,17 @@ String getWiFiSSID() {
  * 
  * @return String: Wi-Fi password.
  */
-String getWiFiPass() {
-    return wifiPassword;
+String getWiFiDefaultPass() {
+    return WIFI_DEFAULT_PASSWORD;
+}
+
+/**
+ * Get IP.
+ * 
+ * @return String: Wi-Fi IP.
+ */
+String getWiFiAPIP() {
+    return wifiAPIP;
 }
 
 /**

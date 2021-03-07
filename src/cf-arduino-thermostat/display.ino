@@ -18,13 +18,13 @@ void displayRenderAPPage() {
     display.print("  AP STARTED      OFF");
 
     display.setCursor(0, 24);                                                                       // Line 3 Size 1
-    display.print(" SSID: " + getWiFiSSID());
+    display.print(" SSID: " + getWiFiDefaultSSID());
 
     display.setCursor(0, 32);                                                                       // Line 4 Size 1
-    display.print(" PASS: " + getWiFiPass());
+    display.print(" PASS: " + getWiFiDefaultPass());
     
     display.setCursor(0, 40);                                                                       // Line 5 Size 1
-    display.print(" IP: " + getWiFiIP());
+    display.print(" IP: " + getWiFiAPIP());
     
     display.display();
 }
