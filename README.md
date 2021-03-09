@@ -12,7 +12,7 @@
 
 IoT - Configurable thermostat using ESP8266 (ESP01 or NodeMCU 1.0 ESP-12E), DHT (11 or 22) and ThingsBoard as server.
 
-Version 2.0.0
+Version 2.0.2
 
 ### Built With
 

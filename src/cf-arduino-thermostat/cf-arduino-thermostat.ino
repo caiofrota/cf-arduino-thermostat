@@ -29,7 +29,7 @@
 
 // Application attributes.
 const char* appSketch = "cf-arduino-thermostat";                                                    // Application sketch.
-const char* appVersion = "2.0.1";                                                                   // Application version.
+const char* appVersion = "2.0.2";                                                                   // Application version.
 
 void setup() {
     // Start Serial Monitor.

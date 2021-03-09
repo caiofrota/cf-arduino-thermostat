@@ -23,6 +23,7 @@ void tbSendData() {
     thingsBoard.sendTelemetryJson(isRead);
 
     // Sending DHT data.
+    json.clear();
     json["dht_tempc"] = getDHTTemperatureC();
     json["dht_tempf"] = getDHTTemperatureF();
     json["dht_humid"] = getDHTHumidity();
