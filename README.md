@@ -14,13 +14,40 @@ IoT - Configurable thermostat using ESP8266 (ESP01 or NodeMCU 1.0 ESP-12E), DHT 
 
 Version 2.0.2
 
-### Built With
+## Quick Start
 
-* [ArduinoJson](https://github.com/bblanchon/ArduinoJson/releases/tag/v6.17.3) - Arduino JSON Library Version 6.17.3
-* [DHT](https://github.com/adafruit/DHT-sensor-library/releases/tag/1.4.1) - DHT Sensor Library Version 1.4.1
-* [Logger](https://github.com/caiofrota/Logger/releases/tag/v1.0.3_caiofrota) - Logger Library Version 1.0.3 (modified)
-* [ThingsBoard](https://github.com/caiofrota/ThingsBoard-Arduino-MQTT-SDK/releases/tag/v0.5.0) - Things Board Version 0.5.0 (modified)
-* [WiFiManager](https://github.com/tzapu/WiFiManager) - Wi-Fi Manager Version 2.0.4_beta
+### Prerequisites
+
+What things you need to install the software and how to install them
+
+- [Arduino IDE](https://www.arduino.cc/) - Development IDE Version 1.8.13
+- [ESP8266](https://arduino.esp8266.com/Arduino/versions/2.0.0/doc/installing.html) - ESP8266 Boards Version 2.7.4
+
+### Dependencies
+
+- [Adafruit GFX](https://github.com/adafruit/Adafruit-GFX-Library/releases/tag/1.10.6) - Adafruit GFX Library Version 1.10.6
+- [Adafruit SSD1306.h](https://github.com/adafruit/Adafruit_SSD1306/releases/tag/2.4.3) - Adafruit SSD1306 Library Version 2.4.3
+- [ArduinoJson](https://github.com/bblanchon/ArduinoJson/releases/tag/v6.17.3) - Arduino JSON Library Version 6.17.3
+- [DHT](https://github.com/adafruit/DHT-sensor-library/releases/tag/1.4.1) - DHT Sensor Library Version 1.4.1
+- [Logger](https://github.com/caiofrota/Logger/releases/tag/v1.0.3_caiofrota) - Logger Library Version 1.0.3 (modified)
+- [ThingsBoard](https://github.com/caiofrota/ThingsBoard-Arduino-MQTT-SDK/releases/tag/v0.5.0) - Things Board Version 0.5.0 (modified)
+- [WiFiManager](https://github.com/tzapu/WiFiManager) - Wi-Fi Manager Version 2.0.4_beta
+
+#### Arduino Libraries
+
+- SPI - Serial Peripheral Interface Library.
+- Wire - I2C Communication Library.
+
+### Installing
+
+- Checkout the latest changes or a release from GitHub.
+- Open the file "src/cf-arduino-thermostat/cf-arduino-thermostat.ino" on Arduino IDE.
+- Select your board (Tools > Board > ESP8266 Boards).
+- Upload (Sketch > Upload).
+
+### For more info about usage
+
+- Please read our [Wiki](https://github.com/caiofrota/cf-arduino-thermostat/wiki).
 
 ## Support or Contact
 
