@@ -1,4 +1,4 @@
-![alt text](https://cftechsol.com/wp-content/uploads/2017/12/caiofrota-logo-300x171.png)
+![CF Logo](https://cftechsol.com/wp-content/uploads/2017/12/caiofrota-logo-300x171.png)
 
 [![GitHub issues](https://img.shields.io/github/issues/caiofrota/cf-arduino-thermostat.svg)](https://github.com/caiofrota/cf-rest/issues)
 [![Fork](https://img.shields.io/github/forks/caiofrota/cf-arduino-thermostat.svg)](#)
@@ -51,7 +51,7 @@ What things you need to install the software and how to install them
 
 ## Support or Contact
 
-Contact us at contact@cftechsol.com for questions and we'll help you sort it out.
+Contact us at caiofrota@gmail.com for questions and we'll help you sort it out.
 
 ## Issues
 
@@ -63,7 +63,7 @@ Please read [CONTRIBUTING.md](https://gist.github.com/caiofrota/6e65a17fd3bf100d
 
 ## Authors
 
-* **Caio Frota** - *Initial work* - [caiofrota](https://github.com/caiofrota) | [CF Technology Solutions](https://cftechsol.com)
+* **Caio Frota** - *Initial work* - [caiofrota](https://github.com/caiofrota)
 
 ## License
 
