@@ -1,12 +1,37 @@
-//DHT dht(2,  DHT11);                                                                                 // DHT11. (D4/GPIO2)
-DHT dht(2,  DHT22);                                                                                 // DHT22. (D4/GPIO2)
+/**
+ * DHT Sensor - Digital Humidity and Temperature Sensor.
+ * 
+ * Libraries:
+ *      - DHT Sensor Library Version 1.4.1 (https://github.com/adafruit/DHT-sensor-library/releases/tag/1.4.1).
+ * 
+ * Components:
+ *      DHT11 or DHT22 (Not tested with other DHT type).
+ * 
+ * DHT Acknowledged BUG: https://github.com/adafruit/DHT-sensor-library/issues/94
+ * 
+ *      Was noticed that DHT stop working after some uptime, after a long research about that
+ *      was figured that it's a acknowleged BUG with no solution so far. So i've implemented
+ *      a workaround until this problem is definitelly solved.
+ *      
+ * Workaround:
+ *      A pin is being used for physically restarting DHT when it's getting NaN.
+ */
 
+// DHT Pins.
+const int DHT_PIN_DATA = 2;               // (GPIO2 / D4 - NodeMCU)                                 // DHT Pin Data.
+const int DHT_PIN_GND  = 0;               // (GPIO0 / D3 - NodeMCU)                                 // DHT Pin GND (Workaround for DHT reading failure).
+
+// DHT Object.
+//DHT dht(DHT_PIN_DATA, DHT11);                                                                       // DHT11.
+DHT dht(DHT_PIN_DATA, DHT22);                                                                       // DHT22.
+
+// DHT attributes.
 float dhtTemperatureC = 0;                                                                          // Temperature in Celsius.
 float dhtTemperatureF = 0;                                                                          // Temperature in Fahrenheit.
-float dhtHumidity = 0;                                                                              // Humidity.
-float dhtHeatIndexC = 0;                                                                            // Heat index in Celsius.
-float dhtHeatIndexF = 0;                                                                            // Heat index in Fahrenheit.
-bool dhtRead = false;                                                                               // Flag for read failure checking.
+float dhtHumidity     = 0;                                                                          // Humidity.
+float dhtHeatIndexC   = 0;                                                                          // Heat index in Celsius.
+float dhtHeatIndexF   = 0;                                                                          // Heat index in Fahrenheit.
+bool  dhtRead         = false;                                                                      // Flag for read failure checking.
 
 /**
  * Collect DHT data.
@@ -16,7 +41,7 @@ void dhtReadData() {
     dhtTemperatureC = dht.readTemperature();
     dhtTemperatureF = dht.readTemperature(true);
     dhtHumidity = dht.readHumidity();
-
+    
     // Check if it was read.
     if (isnan(dhtTemperatureC) || isnan(dhtTemperatureF) || isnan(dhtHumidity)) {
         Logger::warning("Failed to read from DHT sensor!");
@@ -26,6 +51,8 @@ void dhtReadData() {
         dhtHeatIndexC = 0.0;
         dhtHeatIndexF = 0.0;
         dhtRead = false;
+        digitalWrite(DHT_PIN_GND, !digitalRead(DHT_PIN_GND));                                       // DHT Workaround for fail reading failure.
+                                                                                                    // Physically power recycle.
         return;
     }
     
@@ -41,6 +68,7 @@ void dhtReadData() {
  * Start DHT.
  */
 void dhtBegin() {
+    pinMode(DHT_PIN_GND, OUTPUT);                                                                   // DHT Workaround for fail reading failure.
     dht.begin();
 }
 
