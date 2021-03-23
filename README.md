@@ -12,7 +12,7 @@
 
 IoT - Configurable thermostat using ESP8266 (ESP01 or NodeMCU 1.0 ESP-12E), DHT (11 or 22) and ThingsBoard as server.
 
-Version 2.0.2
+Version 2.0.3
 
 ## Quick Start
 
@@ -52,6 +52,10 @@ What things you need to install the software and how to install them
 ## Support or Contact
 
 Contact us at caiofrota@gmail.com for questions and we'll help you sort it out.
+
+## Changelog
+
+For more informations about releases, visit [CHANGELOG](https://github.com/caiofrota/cf-arduino-thermostat/blob/main/CHANGELOG.md).
 
 ## Issues
 
